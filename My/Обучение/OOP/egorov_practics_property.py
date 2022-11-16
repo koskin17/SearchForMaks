@@ -23,7 +23,7 @@ class User:
     def secret(self):
         s = input("Введите Ваш пароль: ")
         if s == self.password:
-            print(self.__secret)
+            return self.__secret
         else:
             raise ValueError("Доступ закрыт")
 
@@ -78,4 +78,4 @@ print(user1.password)
 
 user1.password = input("Введите новый пароль: ")
 print("Новый пароль: ", user1.password)
-user1.secret()
+print(user1.secret)

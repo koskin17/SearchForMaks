@@ -7,12 +7,28 @@ class User:
 
     def __init__(self, login, password):
         self.login = login
-        self.__password = password
+        """
+        До этого аттрибут password был с двумя подчеркиваниями. Т.е. при инициализации объекта аттрибут passwod сразу
+        становился защищенным и ему сразу присваивался пароль без проверок.
+        Для того, чтобы проверки выполнялись в момент инициализации экземпляра, в качестве собственного (self) имени
+        аттрибута вызывалось свойство. В нашем случае этого свойство password, т.е. без подчеркиваний.
+        Т.е. сразу запускается setter, который сразу проверяет пароль на корректность.
+        """
+        self.password = password
+        self.__secret = "Секретные данные"
+
+    # Получение доступа к секретному аттрибуту
+
+    def secret(self):
+        s = input("Введите Ваш пароль: ")
+        if s == self.password:
+            print(self.__secret)
+        else:
+            raise ValueError("Доступ закрыт")
 
     @property
     # По умолчанию эта функция getter
     def password(self):
-        print("Getter called")
         return self.__password
 
     # Проверка пароля на наличие цифр.
@@ -41,7 +57,6 @@ class User:
         if not User.is_include_number(value):
             raise ValueError("Пароль должен содержать цифры")
 
-        print("Setter called")
         self.__password = value
 
 
@@ -62,3 +77,4 @@ print(user1.password)
 
 user1.password = input("Введите новый пароль: ")
 print("Новый пароль: ", user1.password)
+user1.secret()

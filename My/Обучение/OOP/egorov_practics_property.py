@@ -19,6 +19,7 @@ class User:
 
     # Получение доступа к секретному аттрибуту
 
+    @property
     def secret(self):
         s = input("Введите Ваш пароль: ")
         if s == self.password:

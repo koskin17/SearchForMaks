@@ -44,10 +44,15 @@ class Registration:
 
     @staticmethod
     def check_password_dictionary(password):
+        tmp_lst = []
         with open('easy_passwords.txt', 'r') as file:
             for line in file:
-                if line == password:
+                tmp_lst.append(line.strip('\n'))
+
+            for value in tmp_lst:
+                if password == value:
                     return False
+
         return True
 
     @property
@@ -70,7 +75,8 @@ class Registration:
         if not Registration.check_password_dictionary(password):
             raise ValueError("Your password is too easy.")
 
+        print("Password is good!")
         self.__password = password
 
 
-t1 = Registration("test@test.com", "abc123AA")
+t1 = Registration("test@test.com", "PAssword123")

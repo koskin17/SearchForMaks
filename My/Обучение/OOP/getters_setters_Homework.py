@@ -6,7 +6,7 @@ class UserMail:
     def get_email(self):
         return self._email
 
-    def set_email(self, new_email: str):
+    def set_email(self, new_email):
         if isinstance(new_email, str) \
                 and new_email.count("@") == 1 \
                 and "." in new_email[new_email.index("@") + 1:]:

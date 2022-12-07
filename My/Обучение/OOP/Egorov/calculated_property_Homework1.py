@@ -31,7 +31,7 @@ print(r2.area)
 print(r3.area)
 
 width_r4 = input("Введите ширину прямоугольника: ")
-height_r4 = input("Введите высоту прямоугольник: ")
+height_r4 = input("Введите высоту прямоугольника: ")
 
 r4 = Rectangle(int(width_r4), int(height_r4))
 print(r4.area)

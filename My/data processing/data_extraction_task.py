@@ -19,7 +19,7 @@ data.fillna(0, axis=1, inplace=True)
 print()
 print(data.head())
 # Применение лямбда-функции для расчета процента и заполнения нового столбца полученными данными
-# Параметр axis - для применения лябда-функции построчно
+# Параметр axis - для применения лямбда-функции построчно
 data["Percent"] = data.apply(lambda x: int(x["UnemployedDisabled"] / x["UnemployedTotal"] * 100), axis=1)
 # Смотрим на результат - на данные в столбце
 print(data["Percent"])

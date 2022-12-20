@@ -6,17 +6,25 @@ import simple_draw as sd
 # которые есть в этом модуле
 
 sd.resolution = (1200, 600)
-# нарисовать три вложенных окружности с шагом 5 пикселей
+# 1. Нарисовать три вложенных окружности с шагом 5 пикселей
 point = sd.get_point(300, 300)
 radius = 50
 
 for _ in range(3):
     radius += 5
     sd.circle(center_position=point, radius=radius, width=2)
-#   Если стоять курсором внутри скобок и нажать Ctrl + P, то появится подсказка заполнения параметров для функции
+    # Если стоять курсором внутри скобок и нажать Ctrl + P, то появится подсказка заполнения параметров для функции
 
 # TODO написать функцию рисования пузырька, принимающую 2 параметра: точка рисования и шаг
-def bubble(point, step):
+def bubble(start_point, step):
+    bubble_radius = 50
+
+    for _ in range(3):
+        bubble_radius += step
+        sd.circle(center_position=start_point, radius=bubble_radius, width=2)
+
+point2 = sd.get_point(500, 500)
+bubble(start_point=point2, step=10)
 
 # TODO нарисовать 10 пузырьков в ряд
 

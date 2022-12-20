@@ -27,13 +27,16 @@ point2 = sd.get_point(300, 300)
 bubble(start_point=point2, step=10)
 
 # 3. нарисовать 10 пузырьков в ряд
-for x in range(100, 1100, 100):
+for x in range(100, 1001, 100):
     point3 = sd.get_point(x, 500)
     bubble(start_point=point3, step=5)
 
+# 4. Нарисовать три ряда по 10 пузырьков
+for y in range(100, 301, 100):
+    for x in range(100, 1001, 300):
+        point4 = sd.get_point(x, y)
+        bubble(start_point=point4, step=5)
 
-
-# TODO нарисовать три ряда по 10 пузырьков
 
 # TODO нарисовать 100 пузырьков в произвольных местах экрана случаными цветами
 

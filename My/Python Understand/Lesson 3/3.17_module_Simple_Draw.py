@@ -1,6 +1,8 @@
 # Модуль Simple Draw
+from random import randint
 
 import simple_draw as sd
+
 # Если зажать Ctrl и мышкой на названии модуля, то откроется файл с содержанием этого модуля
 # Находясь в этом файле можно в Pycharm нажать на структуру (левый нижний угол) и увидеть все переменные и функции,
 # которые есть в этом модуле
@@ -15,6 +17,7 @@ for _ in range(3):
     sd.circle(center_position=point, radius=radius, width=2)
     # Если стоять курсором внутри скобок и нажать Ctrl + P, то появится подсказка заполнения параметров для функции
 
+
 # 2. Написать функцию рисования пузырька, принимающую 2 параметра: точка рисования и шаг
 def bubble(start_point, step):
     bubble_radius = 50
@@ -22,6 +25,7 @@ def bubble(start_point, step):
     for _ in range(3):
         bubble_radius += step
         sd.circle(center_position=start_point, radius=bubble_radius, width=2)
+
 
 point2 = sd.get_point(300, 300)
 bubble(start_point=point2, step=10)
@@ -37,7 +41,11 @@ for y in range(100, 301, 100):
         point4 = sd.get_point(x, y)
         bubble(start_point=point4, step=5)
 
-
-# TODO нарисовать 100 пузырьков в произвольных местах экрана случаными цветами
+# 5. Нарисовать 100 пузырьков в произвольных местах экрана случайными цветами
+# sd.resolution = (1200, 600)
+for _ in range(100):
+    point5 = sd.random_point()
+    step = randint(2, 10)
+    bubble(start_point=point5, step=step)
 
 sd.pause()

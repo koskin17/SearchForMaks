@@ -32,3 +32,16 @@ def duplicate_nums(list_with_number):
 print(duplicate_nums([1, 2, 3, 4, 3, 5, 6]))
 print(duplicate_nums([81, 72, 43, 72, 81, 99, 99, 100, 12, 54]))
 print(duplicate_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+
+# Вариант 2
+def duplicate_nums(list_with_number):
+    duplicates = Counter(list_with_number)
+
+    lst = sorted(num for num, amount in duplicates.items() if amount >= 2)
+    return lst or []
+
+
+print()
+print(duplicate_nums([1, 2, 3, 4, 3, 5, 6]))
+print(duplicate_nums([81, 72, 43, 72, 81, 99, 99, 100, 12, 54]))
+print(duplicate_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))

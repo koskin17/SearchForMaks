@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 from tkinter.ttk import Progressbar
 import py7zr
-import xml.etree.ElementTree as ET
 import re
 
 class TextSearchApp:
@@ -106,17 +105,13 @@ class TextSearchApp:
                     if file_name.endswith('.xml'):
                         try:
                             # Читаем содержимое XML файла
-                            xml_content = file_data.read().decode('utf-8', errors='replace')  # Исправлено декодирование
+                            xml_content = file_data.read().decode('utf-8', errors='replace')  # Декодирование с заменой ошибок
 
-                            # Добавляем отладочную информацию в лог
-                            self.results.insert(tk.END, f"Проверка файла {file_name} из архива {edz_path}\n")
-
-                            # Ищем блок между тегами <package> и </package>
-                            package_block = re.search(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
-                            if package_block:
-                                block_content = package_block.group(1)
-                                if search_text in block_content:
-                                    return block_content  # Возвращаем блок текста, если найден
+                            # Ищем блок между тегами <package> и </package> с указанным текстом
+                            package_blocks = re.findall(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
+                            for block in package_blocks:
+                                if search_text in block:
+                                    return block  # Возвращаем блок текста, если найден
                         except Exception as e:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")
         except Exception as e:

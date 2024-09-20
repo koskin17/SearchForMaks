@@ -131,6 +131,7 @@ class TextSearchApp:
                 f.write(content)
             with py7zr.SevenZipFile(f"{search_text}.edz", 'w') as archive:
                 archive.write("manifest.xml")
+                os.remove('manifest.xml')
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при сохранении файла: {e}")
 

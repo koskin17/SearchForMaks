@@ -3,7 +3,7 @@ from os import walk
 from os import remove
 
 
-pattern = 'J10807ES' #nessesary text
+pattern = 'J10807ES' #necessary text
 files_with_pattern = []
 
 with py7zr.SevenZipFile(r"E:\Python projects\SearchForMaks\Оригиналы\Delta_5.edz", 'r') as archive:

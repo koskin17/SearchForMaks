@@ -12,7 +12,7 @@ class TextSearchApp:
 
         # Поле для ввода текста
         self.search_label = tk.Label(root, text="Введите текст для поиска:")
-        self.search_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)    # positioning fied by grid
+        self.search_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
         self.search_entry = tk.Entry(root, width=50)
         self.search_entry.grid(row=0, column=1, padx=5, pady=5)
@@ -44,13 +44,11 @@ class TextSearchApp:
         self.results.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
 
     def browse_folder(self):
-        """Method for displaing the window for selecting a folder"""
         folder_path = filedialog.askdirectory()
         self.folder_entry.delete(0, tk.END)
         self.folder_entry.insert(0, folder_path)
 
     def paste_from_clipboard(self):
-        """Method for paste text from clipboard"""
         try:
             clipboard_text = self.root.clipboard_get()  # Получение текста из буфера обмена
             self.search_entry.delete(0, tk.END)  # Очищаем поле
@@ -59,7 +57,6 @@ class TextSearchApp:
             messagebox.showerror("Ошибка", "Буфер обмена пуст или не содержит текста.")
 
     def search_text_in_edz_files(self):
-        """"Method for getting text from input fields"""
         folder_path = self.folder_entry.get()
         search_text = self.search_entry.get()
 
@@ -67,10 +64,10 @@ class TextSearchApp:
             messagebox.showerror("Ошибка", "Пожалуйста, введите текст для поиска и выберите папку.")
             return
 
-        """Clearing the previous results"""
+        # Очищаем предыдущие результаты
         self.results.delete(1.0, tk.END)
 
-        """Counting the number of .edz archives"""
+        # Подсчитываем количество архивов .edz
         edz_files = [f for f in os.listdir(folder_path) if f.endswith('.edz')]
         total_files = len(edz_files)
 
@@ -78,7 +75,7 @@ class TextSearchApp:
             messagebox.showinfo("Результат", "В выбранной папке нет файлов формата .edz.")
             return
 
-        """Starting search with progress-bar"""
+        # Начинаем поиск с прогресс-баром
         self.progress['value'] = 0
         self.progress['maximum'] = total_files
 
@@ -86,66 +83,75 @@ class TextSearchApp:
             edz_path = os.path.join(folder_path, edz_file)
             found_block = self.search_in_edz(edz_path, search_text)
             self.progress['value'] += 1
-            self.root.update_idletasks()  # Update interface for displaing progress
+            self.root.update_idletasks()  # Обновляем интерфейс для отображения прогресса
 
             if found_block:
-                """Save founded blok of text in file"""
-                self.save_to_file("manifest.xml", found_block, search_text)
-                self.results.insert(tk.END, f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}\n")
-                
-                return  # Stop searching text if it found
+                # Сохраняем найденный блок в файл
+                self.save_to_file(search_text, found_block)
 
-        # messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
+                # Предложить выбрать папку для сохранения архива
+                self.save_archive_with_manifest(search_text)
+                self.results.insert(tk.END, f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}\n")
+                messagebox.showinfo("Результат", f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}")
+                return  # Прекращаем поиск после нахождения текста
+
+        messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
         self.results.insert(tk.END, "Текст не найден ни в одном архиве.\n")
 
     def search_in_edz(self, edz_path, search_text):
-        """Method for searching input text in specified folder"""
         try:
             with py7zr.SevenZipFile(edz_path, 'r') as archive:
-                """Getting list of all files in folder"""
+                # Получаем все файлы из архива
                 extracted_files = archive.readall()
-                print(extracted_files)
 
                 for file_name, file_data in extracted_files.items():
                     if file_name.endswith('.xml'):
                         try:
-                            """Reading file XML"""
-                            xml_content = file_data.read().decode('utf-8', errors='replace')  # Decoding with replacement errors
+                            # Читаем содержимое XML файла
+                            xml_content = file_data.read().decode('utf-8', errors='replace')  # Декодирование с заменой ошибок
 
-                            """Searching blok between tags <package> and <package> with input text""" 
+                            # Ищем блок между тегами <package> и </package> с указанным текстом
                             package_blocks = re.findall(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
                             for block in package_blocks:
                                 if search_text in block:
-                                    return block  # return block with text if it found
+                                    return block  # Возвращаем блок текста, если найден
                         except Exception as e:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")
         except Exception as e:
             self.results.insert(tk.END, f"Ошибка при работе с архивом {edz_path}: {e}\n")
-        return None  # Return None, if text not found
+        return None  # Возвращаем None, если текст не найден
 
-    def save_to_file(self, filename, content, search_text):
-        """Method for saving found text to file "filename".xml and add it to archive .edz"""
-        
+    def save_to_file(self, filename, content):
         folder_path = self.folder_entry.get()
-        file_path = os.path.join(folder_path, filename)
+        file_path = os.path.join(folder_path, f"{filename}.xml")
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-                
-            with py7zr.SevenZipFile(f"{search_text}.edz", 'w') as archive:
-                archive.write("manifest.xml")
-
-
-            os.remove('manifest.xml')
-
-            """Searching file with text in  name from search text"""
-            with py7zr.SevenZipFile(folder_path, 'r') as archive:
-                """Getting list of all files in folder"""
-                extracted_files = archive.readall()
-                print(extracted_files)
-                
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при сохранении файла: {e}")
+
+    def save_archive_with_manifest(self, search_text):
+        # Сохранение найденного блока текста в XML файл (manifest.xml)
+        manifest_filename = "manifest.xml"
+        manifest_path = os.path.join(self.folder_entry.get(), manifest_filename)
+
+        try:
+            # Запрашиваем у пользователя папку для сохранения архива
+            save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
+            if not save_folder:
+                messagebox.showerror("Ошибка", "Папка для сохранения не выбрана.")
+                return
+
+            archive_path = os.path.join(save_folder, f"{search_text}.edz")
+
+            # Создаем архив с файлом manifest.xml
+            with py7zr.SevenZipFile(archive_path, 'w') as archive:
+                archive.write(manifest_path, manifest_filename)
+
+            messagebox.showinfo("Результат", f"Архив сохранен: {archive_path}")
+
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Ошибка при создании архива: {e}")
 
 # Запуск программы
 root = tk.Tk()

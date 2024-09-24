@@ -135,6 +135,7 @@ class TextSearchApp:
             with py7zr.SevenZipFile(f"{search_text}.edz", 'w') as archive:
                 archive.write("manifest.xml")
 
+
             os.remove('manifest.xml')
 
             """Searching file with text in  name from search text"""

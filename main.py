@@ -50,9 +50,9 @@ class TextSearchApp:
 
     def paste_from_clipboard(self):
         try:
-            clipboard_text = self.root.clipboard_get()  # Получение текста из буфера обмена
-            self.search_entry.delete(0, tk.END)  # Очищаем поле
-            self.search_entry.insert(0, clipboard_text)  # Вставляем текст из буфера
+            clipboard_text = self.root.clipboard_get()  # getting text fron clipboard
+            self.search_entry.delete(0, tk.END)  # clearing the field
+            self.search_entry.insert(0, clipboard_text)  # paste text from clipboard
         except tk.TclError:
             messagebox.showerror("Ошибка", "Буфер обмена пуст или не содержит текста.")
 
@@ -64,10 +64,10 @@ class TextSearchApp:
             messagebox.showerror("Ошибка", "Пожалуйста, введите текст для поиска и выберите папку.")
             return
 
-        # Очищаем предыдущие результаты
+        # clearing the previous results
         self.results.delete(1.0, tk.END)
 
-        # Подсчитываем количество архивов .edz
+        # counting the number of .edz archives
         edz_files = [f for f in os.listdir(folder_path) if f.endswith('.edz')]
         total_files = len(edz_files)
 
@@ -75,7 +75,7 @@ class TextSearchApp:
             messagebox.showinfo("Результат", "В выбранной папке нет файлов формата .edz.")
             return
 
-        # Начинаем поиск с прогресс-баром
+        # start searching with progress-bar
         self.progress['value'] = 0
         self.progress['maximum'] = total_files
 
@@ -83,15 +83,15 @@ class TextSearchApp:
             edz_path = os.path.join(folder_path, edz_file)
             found_block = self.search_in_edz(edz_path, search_text)
             self.progress['value'] += 1
-            self.root.update_idletasks()  # Обновляем интерфейс для отображения прогресса
+            self.root.update_idletasks()  # update interface for displaing the progress
 
             if found_block:
-                # Сохраняем найденный блок в XML файл и упаковываем в архив .edz
+                # saving the found block in an XML file and pack it into an .edz archive
                 self.save_to_edz_archive(search_text, found_block)
 
                 self.results.insert(tk.END, f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}\n")
                 messagebox.showinfo("Результат", f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}")
-                return  # Прекращаем поиск после нахождения текста
+                return  # stop searching after finding the text
 
         messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
         self.results.insert(tk.END, "Текст не найден ни в одном архиве.\n")
@@ -99,20 +99,20 @@ class TextSearchApp:
     def search_in_edz(self, edz_path, search_text):
         try:
             with py7zr.SevenZipFile(edz_path, 'r') as archive:
-                # Получаем все файлы из архива
+                # getting all files from the archive
                 extracted_files = archive.readall()
 
                 for file_name, file_data in extracted_files.items():
                     if file_name.endswith('.xml'):
                         try:
-                            # Читаем содержимое XML файла
-                            xml_content = file_data.read().decode('utf-8', errors='replace')  # Декодирование с заменой ошибок
+                            # reading content of XML file
+                            xml_content = file_data.read().decode('utf-8', errors='replace')  # Decoding with error replacement
 
-                            # Ищем блок между тегами <package> и </package> с указанным текстом
+                            # looking for a block between the tags <package> and </package> with the specified text
                             package_blocks = re.findall(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
                             for block in package_blocks:
                                 if search_text in block:
-                                    return block  # Возвращаем блок текста, если найден
+                                    return block  # return the text block if found
                         except Exception as e:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")
         except Exception as e:
@@ -120,27 +120,27 @@ class TextSearchApp:
         return None  # Возвращаем None, если текст не найден
 
     def save_to_edz_archive(self, search_text, content):
-        # Предложить пользователю выбрать папку для сохранения архива
+        # prompt to user to select a folder to save the archive
         save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
         if not save_folder:
             messagebox.showerror("Ошибка", "Папка для сохранения не выбрана.")
             return
 
-        # Путь для сохранения архива .edz
+        # path to save .edz archive
         archive_path = os.path.join(save_folder, f"{search_text}.edz")
         manifest_filename = "manifest.xml"
 
-        # Создаем временный файл manifest.xml
+        # making the temp file manifest.xml
         manifest_path = os.path.join(save_folder, manifest_filename)
         try:
             with open(manifest_path, 'w', encoding='utf-8') as f:
                 f.write(content)
 
-            # Создаем архив .edz с файлом manifest.xml
+            # making archive EDZ with file manifest.xml
             with py7zr.SevenZipFile(archive_path, 'w') as archive:
                 archive.write(manifest_path, manifest_filename)
 
-            # Удаляем временный файл manifest.xml
+            # deleting temp file manifest.xml
             os.remove(manifest_path)
 
             messagebox.showinfo("Результат", f"Архив сохранен: {archive_path}")
@@ -148,7 +148,7 @@ class TextSearchApp:
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при создании архива: {e}")
 
-# Запуск программы
+# start
 root = tk.Tk()
 app = TextSearchApp(root)
 root.mainloop()

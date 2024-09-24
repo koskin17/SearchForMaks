@@ -1,3 +1,5 @@
+""""Extracting the necessary files from"""
+
 import py7zr
 from os import walk
 from os import remove

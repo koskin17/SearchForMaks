@@ -4,6 +4,8 @@ from tkinter import filedialog, scrolledtext, messagebox
 from tkinter.ttk import Progressbar
 import py7zr
 import re
+from os import walk
+from os import remove
 
 class TextSearchApp:
     def __init__(self, root):
@@ -49,6 +51,7 @@ class TextSearchApp:
         self.folder_entry.insert(0, folder_path)
 
     def paste_from_clipboard(self):
+        """Method for paste text from clipboard"""
         try:
             clipboard_text = self.root.clipboard_get()  # getting text fron clipboard
             self.search_entry.delete(0, tk.END)  # clearing the field
@@ -57,6 +60,7 @@ class TextSearchApp:
             messagebox.showerror("Ошибка", "Буфер обмена пуст или не содержит текста.")
 
     def search_text_in_edz_files(self):
+        """Search the inout text in EDZ files"""
         folder_path = self.folder_entry.get()
         search_text = self.search_entry.get()
 
@@ -112,6 +116,28 @@ class TextSearchApp:
                             package_blocks = re.findall(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
                             for block in package_blocks:
                                 if search_text in block:
+                                    files_with_searchtext = []
+                                    with py7zr.SevenZipFile(edz_path, 'r') as archive:
+                                        all_files = archive.getnames()
+
+                                        """Making list of files with necessary text"""
+                                        for file in all_files:
+                                            if search_text in file:
+                                                folder_with_necessary_files=r"..\tmp"
+                                                archive.extractall(folder_with_necessary_files)
+                                                
+                                                for root, dirs, files in walk(folder_with_necessary_files):
+                                                    for file in files:
+                                                        if search_text in file:
+                                                            files_with_searchtext.append(file)
+                                                
+                                                """Deleting unnecessary files"""
+                                                for root, dirs, files in walk(folder_with_necessary_files):
+                                                    for file in files:
+                                                        if file not in ".".join(files_with_searchtext) and not file.endswith(".pdf") and not (file.endswith(".jpg") or file.endswith(".JPG")):
+                                                            remove(f"{root}\\{file}")
+                                                
+                                                """As a result we get all folders from original archive with necessary files"""
                                     return block  # return the text block if found
                         except Exception as e:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")

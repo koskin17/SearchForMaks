@@ -29,16 +29,12 @@ with py7zr.SevenZipFile(r"E:\Python projects\SearchForMaks\Оригиналы\De
             for root, dirs, files in walk(folder_with_nessessary_files):
                 for file in files:
                     print(f"{root}\\{file}")
-            #         if pattern in file:
-            #             files_with_pattern.append(file)
+                    if pattern in file:
+                        files_with_pattern.append(file)
             
-            # for root, dirs, files in walk(folder_with_nessessary_files):
-            #     for file in files:
-            #         if file not in ".".join(files_with_pattern) and not file.endswith(".pdf") and not (file.endswith(".jpg") or file.endswith(".JPG")):
-            #             remove(f"{root}{file}")
-
-                                
-            # print(files_with_pattern)
-            # print(pattern in ".".join(files_with_pattern))
+            for root, dirs, files in walk(folder_with_nessessary_files):
+                for file in files:
+                    if file not in ".".join(files_with_pattern) and not file.endswith(".pdf") and not (file.endswith(".jpg") or file.endswith(".JPG")):
+                        remove(f"{root}\\{file}")
             
             break

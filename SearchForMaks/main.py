@@ -142,7 +142,6 @@ class TextSearchApp:
                 """Getting list of all files in folder"""
                 extracted_files = archive.readall()
                 print(extracted_files)
-                # for file_name, file_data in extracted_files.items():
                 
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при сохранении файла: {e}")

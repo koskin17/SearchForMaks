@@ -86,13 +86,11 @@ class TextSearchApp:
             self.root.update_idletasks()  # Обновляем интерфейс для отображения прогресса
 
             if found_block:
-                # Сохраняем найденный блок в файл
-                self.save_to_file(search_text, found_block)
+                # Сохраняем найденный блок в XML файл и упаковываем в архив .edz
+                self.save_to_edz_archive(search_text, found_block)
 
-                # Предложить выбрать папку для сохранения архива
-                self.save_archive_with_manifest(search_text)
-                self.results.insert(tk.END, f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}\n")
-                messagebox.showinfo("Результат", f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}")
+                self.results.insert(tk.END, f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}\n")
+                messagebox.showinfo("Результат", f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}")
                 return  # Прекращаем поиск после нахождения текста
 
         messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
@@ -121,32 +119,29 @@ class TextSearchApp:
             self.results.insert(tk.END, f"Ошибка при работе с архивом {edz_path}: {e}\n")
         return None  # Возвращаем None, если текст не найден
 
-    def save_to_file(self, filename, content):
-        folder_path = self.folder_entry.get()
-        file_path = os.path.join(folder_path, f"{filename}.xml")
-        try:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(content)
-        except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка при сохранении файла: {e}")
+    def save_to_edz_archive(self, search_text, content):
+        # Предложить пользователю выбрать папку для сохранения архива
+        save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
+        if not save_folder:
+            messagebox.showerror("Ошибка", "Папка для сохранения не выбрана.")
+            return
 
-    def save_archive_with_manifest(self, search_text):
-        # Сохранение найденного блока текста в XML файл (manifest.xml)
+        # Путь для сохранения архива .edz
+        archive_path = os.path.join(save_folder, f"{search_text}.edz")
         manifest_filename = "manifest.xml"
-        manifest_path = os.path.join(self.folder_entry.get(), manifest_filename)
 
+        # Создаем временный файл manifest.xml
+        manifest_path = os.path.join(save_folder, manifest_filename)
         try:
-            # Запрашиваем у пользователя папку для сохранения архива
-            save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
-            if not save_folder:
-                messagebox.showerror("Ошибка", "Папка для сохранения не выбрана.")
-                return
+            with open(manifest_path, 'w', encoding='utf-8') as f:
+                f.write(content)
 
-            archive_path = os.path.join(save_folder, f"{search_text}.edz")
-
-            # Создаем архив с файлом manifest.xml
+            # Создаем архив .edz с файлом manifest.xml
             with py7zr.SevenZipFile(archive_path, 'w') as archive:
                 archive.write(manifest_path, manifest_filename)
+
+            # Удаляем временный файл manifest.xml
+            os.remove(manifest_path)
 
             messagebox.showinfo("Результат", f"Архив сохранен: {archive_path}")
 

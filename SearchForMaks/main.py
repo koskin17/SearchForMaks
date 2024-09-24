@@ -92,7 +92,7 @@ class TextSearchApp:
                 """Save founded blok of text in file"""
                 self.save_to_file("manifest.xml", found_block, search_text)
                 self.results.insert(tk.END, f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}\n")
-                # messagebox.showinfo("Результат", f"Текст найден и сохранен в файле {search_text}.xml из архива {edz_file}")
+                
                 return  # Stop searching text if it found
 
         # messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
@@ -104,6 +104,7 @@ class TextSearchApp:
             with py7zr.SevenZipFile(edz_path, 'r') as archive:
                 """Getting list of all files in folder"""
                 extracted_files = archive.readall()
+                print(extracted_files)
 
                 for file_name, file_data in extracted_files.items():
                     if file_name.endswith('.xml'):
@@ -124,14 +125,24 @@ class TextSearchApp:
 
     def save_to_file(self, filename, content, search_text):
         """Method for saving found text to file "filename".xml and add it to archive .edz"""
+        
         folder_path = self.folder_entry.get()
         file_path = os.path.join(folder_path, filename)
         try:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
+                
             with py7zr.SevenZipFile(f"{search_text}.edz", 'w') as archive:
                 archive.write("manifest.xml")
-                os.remove('manifest.xml')
+
+            os.remove('manifest.xml')
+
+            """Searching file with text in  name from search text"""
+            with py7zr.SevenZipFile(folder_path, 'r') as archive:
+                """Getting list of all files in folder"""
+                extracted_files = archive.readall()
+                print(extracted_files)
+                
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при сохранении файла: {e}")
 

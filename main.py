@@ -4,8 +4,10 @@ from tkinter import filedialog, scrolledtext, messagebox
 from tkinter.ttk import Progressbar
 import py7zr
 import re
-from os import walk
-from os import remove
+# from os import walk
+# from os import remove
+# from os import mkdir
+from function import unzip_target_arc
 
 class TextSearchApp:
     def __init__(self, root):
@@ -94,13 +96,15 @@ class TextSearchApp:
                 self.save_to_edz_archive(search_text, found_block)
 
                 self.results.insert(tk.END, f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}\n")
-                messagebox.showinfo("Результат", f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}")
+                # messagebox.showinfo("Результат", f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}")
                 return  # stop searching after finding the text
 
         messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
         self.results.insert(tk.END, "Текст не найден ни в одном архиве.\n")
 
     def search_in_edz(self, edz_path, search_text):
+        global folder_with_temp_files
+        
         try:
             with py7zr.SevenZipFile(edz_path, 'r') as archive:
                 # getting all files from the archive
@@ -114,15 +118,19 @@ class TextSearchApp:
 
                             # looking for a block between the tags <package> and </package> with the specified text
                             package_blocks = re.findall(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
+                            
                             for block in package_blocks:
                                 if search_text in block:
-                                    return block, file_name  # return the text block if found and file name
+                                    folder_with_temp_files = unzip_target_arc(edz_path, search_text)                                    
+                                    
+                                    return block  # return the text block if found and file name
+                                
                         except Exception as e:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")
         except Exception as e:
             self.results.insert(tk.END, f"Ошибка при работе с архивом {edz_path}: {e}\n")
         return None  # Возвращаем None, если текст не найден
-
+    
     def save_to_edz_archive(self, search_text, content):
         # prompt to user to select a folder to save the archive
         save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
@@ -151,6 +159,8 @@ class TextSearchApp:
 
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при создании архива: {e}")
+
+folder_with_temp_files = ''
 
 # start
 root = tk.Tk()

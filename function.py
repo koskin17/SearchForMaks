@@ -1,0 +1,18 @@
+import py7zr
+from os import path
+
+def unzip_target_arc(edz_path, search_text):
+    files_with_searching_model = []
+    
+    with py7zr.SevenZipFile(edz_path) as archive:
+        all_files = archive.getnames()
+        
+        for file in all_files:
+            if search_text in file or file.endswith('.pdf') or file.endswith('.jpg') or file.endswith('.JPG'):
+                files_with_searching_model.append(file)
+            
+        archive.extract(path = './', targets=files_with_searching_model)
+        current_path = path.realpath(__file__)
+                    
+    return current_path
+    

@@ -2,6 +2,8 @@ import py7zr
 from os import path
 
 def unzip_target_arc(edz_path, search_text):
+    """Function for unarchive necesssary files"""
+    
     files_with_searching_model = []
     
     with py7zr.SevenZipFile(edz_path) as archive:

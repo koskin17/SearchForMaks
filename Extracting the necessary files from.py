@@ -1,4 +1,4 @@
-""""Extracting the necessary files from"""
+""""Extracting the necessary files from archive"""
 
 import py7zr
 from zipfile import ZipFile

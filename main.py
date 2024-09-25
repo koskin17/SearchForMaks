@@ -5,9 +5,6 @@ from tkinter import filedialog, scrolledtext, messagebox
 from tkinter.ttk import Progressbar
 import py7zr
 import re
-# from os import walk
-# from os import remove
-# from os import mkdir
 from function import unzip_target_arc
 
 

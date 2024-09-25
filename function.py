@@ -11,8 +11,7 @@ def unzip_target_arc(edz_path, search_text):
             if search_text in file or file.endswith('.pdf') or file.endswith('.jpg') or file.endswith('.JPG'):
                 files_with_searching_model.append(file)
             
-        archive.extract(path = './', targets=files_with_searching_model)
-        current_path = path.realpath(__file__)
+        archive.extract(targets=files_with_searching_model)
                     
-    return current_path
+    return path.realpath('item/')
     

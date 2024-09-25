@@ -1,4 +1,5 @@
 import os
+import shutil
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 from tkinter.ttk import Progressbar
@@ -8,6 +9,9 @@ import re
 # from os import remove
 # from os import mkdir
 from function import unzip_target_arc
+
+
+folder_with_temp_files = ''
 
 class TextSearchApp:
     def __init__(self, root):
@@ -133,6 +137,8 @@ class TextSearchApp:
     
     def save_to_edz_archive(self, search_text, content):
         # prompt to user to select a folder to save the archive
+        global folder_with_temp_files
+        
         save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
         if not save_folder:
             messagebox.showerror("Ошибка", "Папка для сохранения не выбрана.")
@@ -151,18 +157,22 @@ class TextSearchApp:
             # making archive EDZ with file manifest.xml
             with py7zr.SevenZipFile(archive_path, 'w') as archive:
                 archive.write(manifest_path, manifest_filename)
+                print(folder_with_temp_files) 
+                archive.writeall('items/')
 
             # deleting temp file manifest.xml
             os.remove(manifest_path)
+            shutil.rmtree('items')
 
             messagebox.showinfo("Результат", f"Архив сохранен: {archive_path}")
 
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при создании архива: {e}")
 
-folder_with_temp_files = ''
+
 
 # start
 root = tk.Tk()
 app = TextSearchApp(root)
 root.mainloop()
+print(folder_with_temp_files)

@@ -23,10 +23,11 @@ with py7zr.SevenZipFile(r"E:\Python projects\SearchForMaks\Оригиналы\De
             
 """Метод разархивирования целевых файлов"""
 with py7zr.SevenZipFile(r"E:\Python projects\SearchForMaks\Оригиналы\Delta_5.edz", 'r') as archive:
-    archive.extract(path='./tmp', targets=files_with_pattern)
+    archive.extract(targets=files_with_pattern)
 
-file_for_path = files_with_pattern[0]    
-print(file_for_path)
+with py7zr.SevenZipFile(f"{text_for_search}.edz", 'w') as archive:
+    archive.writeall('items/')
+    print("Archive is done")
     
 """Метод с разарзивированием всего архива и удалением ненужных файлов"""
             # print(files_with_pattern)

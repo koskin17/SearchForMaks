@@ -1,1 +1,3 @@
-K11315CS.edz
+*.edz
+.venv/*
+.vscode/*

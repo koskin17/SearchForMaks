@@ -1,9 +1,14 @@
 import os
+import shutil
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 from tkinter.ttk import Progressbar
 import py7zr
 import re
+from function import unzip_target_arc
+
+
+folder_with_temp_files = ''
 
 class TextSearchApp:
     def __init__(self, root):
@@ -49,6 +54,7 @@ class TextSearchApp:
         self.folder_entry.insert(0, folder_path)
 
     def paste_from_clipboard(self):
+        """Method for paste text from clipboard"""
         try:
             clipboard_text = self.root.clipboard_get()  # getting text fron clipboard
             self.search_entry.delete(0, tk.END)  # clearing the field
@@ -57,6 +63,7 @@ class TextSearchApp:
             messagebox.showerror("Ошибка", "Буфер обмена пуст или не содержит текста.")
 
     def search_text_in_edz_files(self):
+        """Search the input text in EDZ files"""
         folder_path = self.folder_entry.get()
         search_text = self.search_entry.get()
 
@@ -90,18 +97,20 @@ class TextSearchApp:
                 self.save_to_edz_archive(search_text, found_block)
 
                 self.results.insert(tk.END, f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}\n")
-                messagebox.showinfo("Результат", f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}")
+                # messagebox.showinfo("Результат", f"Текст найден и сохранен в архиве {search_text}.edz из файла {edz_file}")
                 return  # stop searching after finding the text
 
         messagebox.showinfo("Результат", "Текст не найден ни в одном архиве.")
         self.results.insert(tk.END, "Текст не найден ни в одном архиве.\n")
 
     def search_in_edz(self, edz_path, search_text):
+        global folder_with_temp_files
+        
         try:
             with py7zr.SevenZipFile(edz_path, 'r') as archive:
                 # getting all files from the archive
                 extracted_files = archive.readall()
-
+                
                 for file_name, file_data in extracted_files.items():
                     if file_name.endswith('.xml'):
                         try:
@@ -110,17 +119,23 @@ class TextSearchApp:
 
                             # looking for a block between the tags <package> and </package> with the specified text
                             package_blocks = re.findall(r'(<package.*?>.*?</package>)', xml_content, re.DOTALL)
+                            
                             for block in package_blocks:
                                 if search_text in block:
-                                    return block  # return the text block if found
+                                    folder_with_temp_files = unzip_target_arc(edz_path, search_text)                                    
+                                    
+                                    return block  # return the text block if found and file name
+                                
                         except Exception as e:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")
         except Exception as e:
             self.results.insert(tk.END, f"Ошибка при работе с архивом {edz_path}: {e}\n")
         return None  # Возвращаем None, если текст не найден
-
+    
     def save_to_edz_archive(self, search_text, content):
         # prompt to user to select a folder to save the archive
+        global folder_with_temp_files
+        
         save_folder = filedialog.askdirectory(title="Выберите папку для сохранения архива")
         if not save_folder:
             messagebox.showerror("Ошибка", "Папка для сохранения не выбрана.")
@@ -139,16 +154,22 @@ class TextSearchApp:
             # making archive EDZ with file manifest.xml
             with py7zr.SevenZipFile(archive_path, 'w') as archive:
                 archive.write(manifest_path, manifest_filename)
+                print(folder_with_temp_files) 
+                archive.writeall('items/')
 
             # deleting temp file manifest.xml
             os.remove(manifest_path)
+            shutil.rmtree('items')
 
             messagebox.showinfo("Результат", f"Архив сохранен: {archive_path}")
 
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при создании архива: {e}")
 
+
+
 # start
 root = tk.Tk()
 app = TextSearchApp(root)
 root.mainloop()
+print(folder_with_temp_files)

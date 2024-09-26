@@ -1,3 +1,4 @@
 *.edz
 .venv/*
 .vscode/*
+.idea/*

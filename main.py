@@ -168,7 +168,7 @@ class TextSearchApp:
 
 
 
-# start
+"""Start main programm"""
 root = tk.Tk()
 app = TextSearchApp(root)
 root.mainloop()

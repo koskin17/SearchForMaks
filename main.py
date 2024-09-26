@@ -15,18 +15,18 @@ class TextSearchApp:
         self.root = root
         self.root.title("Поиск текста в XML файлах внутри архивов EDZ")
 
-        # Поле для ввода текста
+        """Field for inout text for search"""
         self.search_label = tk.Label(root, text="Введите текст для поиска:")
         self.search_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
         self.search_entry = tk.Entry(root, width=50)
         self.search_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        # Кнопка для вставки текста из буфера обмена
+        """Button for insert text from clipboard"""
         self.paste_button = tk.Button(root, text="Вставить из буфера", command=self.paste_from_clipboard)
         self.paste_button.grid(row=0, column=2, padx=5, pady=5)
 
-        # Кнопка для выбора папки
+        """Button for select the folder"""
         self.folder_label = tk.Label(root, text="Выберите папку:")
         self.folder_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
 
@@ -36,15 +36,15 @@ class TextSearchApp:
         self.browse_button = tk.Button(root, text="Обзор", command=self.browse_folder)
         self.browse_button.grid(row=1, column=2, padx=5, pady=5)
 
-        # Кнопка для запуска поиска
+        """Button for start searching"""
         self.search_button = tk.Button(root, text="Поиск", command=self.search_text_in_edz_files)
         self.search_button.grid(row=2, column=1, padx=5, pady=5)
 
-        # Прогресс-бар
+        """"Progress bar"""
         self.progress = Progressbar(root, orient=tk.HORIZONTAL, length=400, mode='determinate')
         self.progress.grid(row=3, column=1, padx=5, pady=5)
 
-        # Окно для отображения результатов поиска
+        """Window for displaing the results of search"""
         self.results = scrolledtext.ScrolledText(root, width=80, height=20)
         self.results.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
 
@@ -130,7 +130,7 @@ class TextSearchApp:
                             self.results.insert(tk.END, f"Ошибка разбора XML файла: {file_name}, ошибка: {e}\n")
         except Exception as e:
             self.results.insert(tk.END, f"Ошибка при работе с архивом {edz_path}: {e}\n")
-        return None  # Возвращаем None, если текст не найден
+        return None  # Return None if text not found
     
     def save_to_edz_archive(self, search_text, content):
         # prompt to user to select a folder to save the archive

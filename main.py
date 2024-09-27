@@ -6,7 +6,7 @@ from tkinter.ttk import Progressbar
 import py7zr
 import re
 from function import unzip_target_arc
-"""Что это как это?"""
+
 
 folder_with_temp_files = ''
 

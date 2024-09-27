@@ -1,5 +1,6 @@
 import py7zr
 from os import path
+"""Как это"""
 
 def unzip_target_arc(edz_path, search_text):
     """Function for unarchive necesssary files"""

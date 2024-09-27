@@ -172,4 +172,3 @@ class TextSearchApp:
 root = tk.Tk()
 app = TextSearchApp(root)
 root.mainloop()
-print(folder_with_temp_files)

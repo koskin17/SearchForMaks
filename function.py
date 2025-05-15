@@ -1,19 +1,34 @@
 import py7zr
-from os import path
+import os
 
-def unzip_target_arc(edz_path, search_text):
-    """Function for unarchive necesssary files"""
-    
-    files_with_searching_model = []
-    
+def unzip_target_arc(edz_path, search_text, dest_path):
+    """Распаковывает только те файлы из архива, имя которых содержит искомый текст,
+    а также всегда включает файл OMR.manufacturer.xml (если он есть)."""
+
+    files_with_searching_model = set()
+
     with py7zr.SevenZipFile(edz_path) as archive:
         all_files = archive.getnames()
-        
-        for file in all_files:
-            if search_text in file or file.endswith('.pdf') or file.endswith('.jpg') or file.endswith('.JPG'):
-                files_with_searching_model.append(file)
-            
-        archive.extract(targets=files_with_searching_model)
-                    
-    return path.realpath('item/')
-    
+        total_files = len(all_files)
+        print(f"Всего файлов в архиве: {total_files}")
+
+        for idx, file in enumerate(all_files, 1):
+            filename_only = os.path.basename(file)
+
+            # Добавляем файл, если имя содержит текст поиска
+            if search_text in filename_only:
+                files_with_searching_model.add(file)
+
+            # Добавляем OMR.manufacturer.xml всегда (точное имя)
+            if filename_only == "OMR.manufacturer.xml":
+                files_with_searching_model.add(file)
+
+            # Вывод прогресса каждые 100 файлов
+            if idx % 100 == 0 or idx == total_files:
+                print(f"Обработано файлов: {idx}/{total_files}")
+
+        if files_with_searching_model:
+            archive.extract(path=dest_path, targets=list(files_with_searching_model))
+            print(f"Извлечено файлов: {len(files_with_searching_model)}")
+        else:
+            print("Нет файлов для извлечения.")

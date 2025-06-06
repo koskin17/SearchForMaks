@@ -166,45 +166,27 @@ class TextSearchApp:
                                 
                             archive.extract(path=temp_dir, targets=matching_files)
                             self.log_text.insert(tk.END, f"✅ Все файлы успешно извлечены.\n\n")
-                            
-                                # file_path = os.path.join(folder, filename).replace('\\', '/') # TODO Удалить!
-                                # self.log_text.insert(tk.END, f"file_path: {file_path}.\n")  # TODO Удалить!
-                                # self.log_text.insert(tk.END, f"edz_path: {edz_path}.\n")  # TODO Удалить!
-                                # self.log_text.insert(tk.END, f"File: {file}.\n")  # TODO Удалить!
-                                                                                
-                                # archive.extract(path=temp_dir, targets=[file]) # TODO Удалить!
-                                # self.log_text.insert(tk.END, f"✅ Файл {file} успешно извлечён.\n\n") # TODO Удалить!
-                                # except: # TODO Удалить!
-                                #     self.log_text.insert(tk.END, f"⚠️ Файл не найден в архиве: {path}\n") # TODO Удалить!
-                                #     self.log_text.see(tk.END) # TODO Удалить!
-#                             for path in file_paths:
-#                                 if path in all_names:
-#                                     archive.extract(path=temp_dir, targets=[path])
-#                                     extracted_files.append(path)
-#                                 else:
-#                                     self.log_text.insert(tk.END, f"⚠️ Файл не найден в архиве: {path}\n")
-#                                     self.log_text.see(tk.END)
 
-#                             # Створення нового архіву на робочому столі
-#                             archive_name = f"{search_text}.edz"
-#                             archive_path = os.path.join(desktop_path, archive_name)
+                            # Створення нового архіву на робочому столі
+                            archive_name = f"{search_text}.edz"
+                            archive_path = os.path.join(desktop_path, archive_name)
 
-#                             # Запис файлів у новий архів
-#                             with py7zr.SevenZipFile(archive_path, 'w') as new_archive:
-#                                 for root, _, files in os.walk(temp_dir):
-#                                     for file in files:
-#                                         full_path = os.path.join(root, file)
-#                                         rel_path = os.path.relpath(full_path, temp_dir)
-#                                         new_archive.write(full_path, rel_path)
+                            # Запис файлів у новий архів
+                            with py7zr.SevenZipFile(archive_path, 'w') as new_archive:
+                                for root, _, files in os.walk(temp_dir):
+                                    for file in files:
+                                        full_path = os.path.join(root, file)
+                                        rel_path = os.path.relpath(full_path, temp_dir)
+                                        new_archive.write(full_path, rel_path)
 
-#                             # Лог: архів створено
-#                             self.log_text.insert(tk.END, f"💾 Архив сохранён на рабочем столе: {archive_name}\n")
-#                             self.log_text.see(tk.END)
+                            # Лог: архів створено
+                            self.log_text.insert(tk.END, f"💾 Архив сохранён на рабочем столе: {archive_name}\n")
+                            self.log_text.see(tk.END)
 
-#                             # Видалення тимчасової папки (опціонально, наразі закоментовано)
-#                             # shutil.rmtree(temp_dir, ignore_errors=True)
-#                             # self.log_text.insert(tk.END, f"🧹 Временная папка удалена: {temp_dir}\n")
-#                             # self.log_text.see(tk.END)
+                            # Видалення тимчасової папки (опціонально, наразі закоментовано)
+                            shutil.rmtree(temp_dir, ignore_errors=True)
+                            self.log_text.insert(tk.END, f"🧹 Временная папка удалена: {temp_dir}\n")
+                            self.log_text.see(tk.END)
 
 #                             return  # Обробили перший відповідний файл — виходимо
 

@@ -2,7 +2,10 @@
 .venv/*
 .vscode/*
 .idea/*
+# Папка с файлами для тестирования
 Files for work/
+# Папка локальной истории
+.history 
 __pycache__/function.cpython-312.pyc
 App/SearchInEDZ.7z
 Previous version/SearchForMaks.7z

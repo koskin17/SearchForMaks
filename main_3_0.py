@@ -98,6 +98,7 @@ class TextSearchApp:
         for filename in edz_files:
             self.log_text.insert(tk.END, f"Проверяем архив {filename} на наличие искомого текста...\n\n")
             edz_path = os.path.join(folder, filename).replace("\\", "/")  # Повний шлях до файлу
+            self.log_text.insert(tk.END, f"Полный путь к файлу edz_path: {edz_path}\n\n") # TODO УДАЛИТЬ! Путь к файлу выводится
             try:
                 with py7zr.SevenZipFile(edz_path, mode='r') as archive:  # Відкриваємо архів
                     manifest_name = next((name for name in archive.getnames() if name.endswith('manifest.xml')), None)
@@ -121,9 +122,11 @@ class TextSearchApp:
                             items = re.findall(r'<item\s+[^>]*type="([^"]+)"[^>]*locator="([^"]+)"', package_block)
 
                             # Шляхи до файлів
-                            file_paths = [f"items/{type_}/{locator.replace('\\', '/')}" for type_, locator in items]
+                            file_paths = []
+                            for type_, locator in items:
+                                normalized_locator = locator.replace('\\', '/')
+                                file_paths.append(f"items/{type_}/{normalized_locator}")
                             self.log_text.insert(tk.END, f"  Файлы, которые будут упаковы в архив: {file_paths}\n\n")
-                            self.log_text.see(tk.END)
 
                             # Повний manifest.xml (створюємо з одного блоку)
                             full_manifest = f"""<manifest version="2.0">
@@ -137,32 +140,32 @@ class TextSearchApp:
                             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
                             temp_dir = os.path.join(desktop_path, f"temp_{search_text}")
                             os.makedirs(temp_dir, exist_ok=True)
-                            self.log_text.insert(tk.END, f"На Рабочем столе была создана временная папка, которая по окончанию работы будет автоатически удалена.\n\n")
-                            self.log_text.see(tk.END)
+                            self.log_text.insert(tk.END, f"На Рабочем столе была создана временная папка, которая по окончанию работы будет автоматически удалена.\n\n")
 
                             # Зберігаємо manifest.xml
                             manifest_path = os.path.join(temp_dir, "manifest.xml")
                             with open(manifest_path, 'w', encoding='utf-8') as f:
                                 f.write(full_manifest)
                             self.log_text.insert(tk.END, f"Во временной папке был сохранён новый файл manifest.xml.\n\n")
-                            self.log_text.see(tk.END)
 
-                            # Витягуємо зазначені файли
-                            # extracted_files = []
-                            # # all_names = archive.getnames()
                             self.log_text.insert(tk.END, f"Разархивируем из архива следующие файлы: {file_paths}.\n\n")
-                            self.log_text.see(tk.END)
                             
-                            # # with py7zr.SevenZipFile(archive, mode='r') as archive:
-                            for file in file_paths:
-                                self.log_text.insert(tk.END, f"Разархивируем файл: {file}.\n\n")
-                                self.log_text.see(tk.END)
-                                self.log_text.insert(tk.END, f"Извлекаем файл {file}.\n")
-                                self.log_text.see(tk.END)
-                                file_path = os.path.join(edz_path, file).replace('\\', '/')
-                                archive.extract(path=temp_dir, targets=[file_path])
-                                self.log_text.insert(tk.END, f"Файл {file_path} успешно извлечён.\n\n")
-                                self.log_text.see(tk.END)
+                            # Отфильтровываем существующие файлы в архиве (важное исправление)
+                            archive_filenames = archive.getnames()
+                            matching_files = []
+                            for desired_path in file_paths:
+                                match = next((f for f in archive_filenames if f.endswith(desired_path)), None)
+                                if match:
+                                    matching_files.append(match)
+                                else:
+                                    self.log_text.insert(tk.END, f"⚠️ Файл '{desired_path}' не найден в архиве.\n")
+
+                            self.log_text.insert(tk.END, f"Извлекаем {len(matching_files)} файл(ов):\n")
+                            for file in matching_files:
+                                self.log_text.insert(tk.END, f"  - {file}\n")
+                                
+                            archive.extract(path=temp_dir, targets=matching_files)
+                            self.log_text.insert(tk.END, f"✅ Все файлы успешно извлечены.\n\n")
 
                             # Створення нового архіву на робочому столі
                             archive_name = f"{search_text}.edz"
@@ -185,14 +188,14 @@ class TextSearchApp:
                             self.log_text.insert(tk.END, f"🧹 Временная папка удалена: {temp_dir}\n")
                             self.log_text.see(tk.END)
 
-                            return  # Обробили перший відповідний файл — виходимо
+#                             return  # Обробили перший відповідний файл — виходимо
 
-                        else:
-                            self.log_text.insert(tk.END, f"⛔ Текст не найден в архиве: {filename}\n")
-                            self.log_text.see(tk.END)
-                    else:
-                        self.log_text.insert(tk.END, f"❌ manifest.xml не найден в архиве: {filename}\n")
-                        self.log_text.see(tk.END)
+#                         else:
+#                             self.log_text.insert(tk.END, f"⛔ Текст не найден в архиве: {filename}\n")
+#                             self.log_text.see(tk.END)
+#                     else:
+#                         self.log_text.insert(tk.END, f"❌ manifest.xml не найден в архиве: {filename}\n")
+#                         self.log_text.see(tk.END)
 
             except Exception as e:
                 self.log_text.insert(tk.END, f"❗ Ошибка при обработке {filename}: {e}\n")
@@ -203,3 +206,4 @@ if __name__ == "__main__":
     root = tk.Tk()  # Створюємо головне вікно
     app = TextSearchApp(root)  # Ініціалізуємо застосунок
     root.mainloop()  # Запускаємо нескінченний цикл подій
+    

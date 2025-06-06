@@ -165,7 +165,7 @@ class TextSearchApp:
                                 self.log_text.insert(tk.END, f"  - {file}\n")
                                 
                             archive.extract(path=temp_dir, targets=matching_files)
-                            self.log_text.insert(tk.END, f"✅ Все файлы успешно извлечены.\n\n")
+                            self.log_text.insert(tk.END, "✅ Все файлы успешно извлечены.\n\n")
                             
                                 # file_path = os.path.join(folder, filename).replace('\\', '/') # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"file_path: {file_path}.\n")  # TODO Удалить!

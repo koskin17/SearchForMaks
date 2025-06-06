@@ -165,15 +165,15 @@ class TextSearchApp:
                                 self.log_text.insert(tk.END, f"  - {file}\n")
                                 
                             archive.extract(path=temp_dir, targets=matching_files)
-                            self.log_text.insert(tk.END, f"✅ Все файлы успешно извлечены.\n\n")
+                            self.log_text.insert(tk.END, "✅ Все файлы успешно извлечены.\n\n")
                             
                                 # file_path = os.path.join(folder, filename).replace('\\', '/') # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"file_path: {file_path}.\n")  # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"edz_path: {edz_path}.\n")  # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"File: {file}.\n")  # TODO Удалить!
                                                                                 
-                                # archive.extract(path=temp_dir, targets=[file]) # TODO Удалить!
-                                # self.log_text.insert(tk.END, f"✅ Файл {file} успешно извлечён.\n\n") # TODO Удалить!
+                                archive.extract(path=temp_dir, targets=[file])
+                                self.log_text.insert(tk.END, f"✅ Файл {file} успешно извлечён.\n\n")
                                 # except: # TODO Удалить!
                                 #     self.log_text.insert(tk.END, f"⚠️ Файл не найден в архиве: {path}\n") # TODO Удалить!
                                 #     self.log_text.see(tk.END) # TODO Удалить!

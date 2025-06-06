@@ -150,17 +150,6 @@ class TextSearchApp:
 
                             self.log_text.insert(tk.END, f"Разархивируем из архива следующие файлы: {file_paths}.\n\n")
                             
-                            # Отфильтровываем существующие файлы в архиве (важное исправление)
-                            archive_filenames = archive.getnames()
-                            matching_files = []
-                            for desired_path in file_paths:
-                                match = next((f for f in archive_filenames if f.endswith(desired_path)), None)
-                                if match:
-                                    matching_files.append(match)
-                                else:
-                                    self.log_text.insert(tk.END, f"⚠️ Файл '{desired_path}' не найден в архиве.\n")
-
-                            for file in matching_files:
                                 self.log_text.insert(tk.END, f"Извлекаем файл {file}.\n")  # TODO Удалить!
                                 # file_path = os.path.join(folder, filename).replace('\\', '/') # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"file_path: {file_path}.\n")  # TODO Удалить!

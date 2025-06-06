@@ -122,7 +122,10 @@ class TextSearchApp:
                             items = re.findall(r'<item\s+[^>]*type="([^"]+)"[^>]*locator="([^"]+)"', package_block)
 
                             # Шляхи до файлів
-                            file_paths = [f"items/{type_}/{locator.replace('\\', '/')}" for type_, locator in items]
+                            file_paths = []
+                            for type_, locator in items:
+                                normalized_locator = locator.replace('\\', '/')
+                                file_paths.append(f"items/{type_}/{normalized_locator}")
                             self.log_text.insert(tk.END, f"  Файлы, которые будут упаковы в архив: {file_paths}\n\n")
 
                             # Повний manifest.xml (створюємо з одного блоку)
@@ -146,17 +149,26 @@ class TextSearchApp:
                             self.log_text.insert(tk.END, f"Во временной папке был сохранён новый файл manifest.xml.\n\n")
 
                             self.log_text.insert(tk.END, f"Разархивируем из архива следующие файлы: {file_paths}.\n\n")
-                            self.log_text.insert(tk.END, f"file_paths: {file_paths}.\n")  # TODO Удалить!
                             
-                            for file in file_paths:
+                            # Отфильтровываем существующие файлы в архиве (важное исправление)
+                            archive_filenames = archive.getnames()
+                            matching_files = []
+                            for desired_path in file_paths:
+                                match = next((f for f in archive_filenames if f.endswith(desired_path)), None)
+                                if match:
+                                    matching_files.append(match)
+                                else:
+                                    self.log_text.insert(tk.END, f"⚠️ Файл '{desired_path}' не найден в архиве.\n")
+
+                            for file in matching_files:
                                 self.log_text.insert(tk.END, f"Извлекаем файл {file}.\n")  # TODO Удалить!
                                 # file_path = os.path.join(folder, filename).replace('\\', '/') # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"file_path: {file_path}.\n")  # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"edz_path: {edz_path}.\n")  # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"File: {file}.\n")  # TODO Удалить!
                                                                                 
-                                # archive.extract(path=temp_dir, targets=[file])
-                                self.log_text.insert(tk.END, f"Файл {file} успешно извлечён.\n\n")
+                                archive.extract(path=temp_dir, targets=[file])
+                                self.log_text.insert(tk.END, f"✅ Файл {file} успешно извлечён.\n\n")
                                 # except: # TODO Удалить!
                                 #     self.log_text.insert(tk.END, f"⚠️ Файл не найден в архиве: {path}\n") # TODO Удалить!
                                 #     self.log_text.see(tk.END) # TODO Удалить!

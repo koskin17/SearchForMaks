@@ -167,7 +167,7 @@ class TextSearchApp:
                                 # self.log_text.insert(tk.END, f"edz_path: {edz_path}.\n")  # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"File: {file}.\n")  # TODO Удалить!
                                                                                 
-                                archive.extract(path=temp_dir, targets=[file])
+                                # archive.extract(path=temp_dir, targets=[file])
                                 self.log_text.insert(tk.END, f"✅ Файл {file} успешно извлечён.\n\n")
                                 # except: # TODO Удалить!
                                 #     self.log_text.insert(tk.END, f"⚠️ Файл не найден в архиве: {path}\n") # TODO Удалить!

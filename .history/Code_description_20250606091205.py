@@ -149,7 +149,8 @@ class TextSearchApp:
                             self.log_text.insert(tk.END, f"Во временной папке был сохранён новый файл manifest.xml.\n\n")
 
                             self.log_text.insert(tk.END, f"Разархивируем из архива следующие файлы: {file_paths}.\n\n")
-                            
+                            self.log_text.insert(tk.END, f"file_paths: {file_paths}.\n")  # TODO Удалить!
+ 
                             # Отфильтровываем существующие файлы в архиве (важное исправление)
                             archive_filenames = archive.getnames()
                             matching_files = []
@@ -160,8 +161,7 @@ class TextSearchApp:
                                 else:
                                     self.log_text.insert(tk.END, f"⚠️ Файл '{desired_path}' не найден в архиве.\n")
 
-                            for file in matching_files:
-                                self.log_text.insert(tk.END, f"Извлекаем файл {file}.\n")  # TODO Удалить!
+                            for file in matching_files:                                self.log_text.insert(tk.END, f"Извлекаем файл {file}.\n")  # TODO Удалить!
                                 # file_path = os.path.join(folder, filename).replace('\\', '/') # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"file_path: {file_path}.\n")  # TODO Удалить!
                                 # self.log_text.insert(tk.END, f"edz_path: {edz_path}.\n")  # TODO Удалить!

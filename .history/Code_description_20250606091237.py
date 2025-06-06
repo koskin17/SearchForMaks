@@ -149,7 +149,6 @@ class TextSearchApp:
                             self.log_text.insert(tk.END, f"Во временной папке был сохранён новый файл manifest.xml.\n\n")
 
                             self.log_text.insert(tk.END, f"Разархивируем из архива следующие файлы: {file_paths}.\n\n")
-                            
                             # Отфильтровываем существующие файлы в архиве (важное исправление)
                             archive_filenames = archive.getnames()
                             matching_files = []
